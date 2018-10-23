@@ -35,14 +35,14 @@ class App extends Component {
                     <button className="btn btn-primary btn-lg font-weight-bold" disbaled="false">X</button>
                     <button className="btn btn-primary btn-lg font-weight-bold" disabled="true">O</button>
                 </div>
-                <div className="row">
+                <div className="row justify-content-center">
                     <p>INFO HERE</p>
                 </div>
-                <div className="row">
+                <div className="row justify-content-center">
                     <p>GAME HERE</p>
                 </div>
-                <div className="row">
-                    <button>Restart Game</button>
+                <div className="row justify-content-center">
+                    <button className="btn btn-secondary">Restart Game</button>
                 </div>
             </div>
         )
