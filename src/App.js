@@ -31,9 +31,9 @@ class App extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="row">
-                    <button>X</button>
-                    <button>O</button>
+                <div className="row justify-content-center">
+                    <button className="btn btn-primary btn-lg font-weight-bold" disbaled="false">X</button>
+                    <button className="btn btn-primary btn-lg font-weight-bold" disabled="true">O</button>
                 </div>
                 <div className="row">
                     <p>INFO HERE</p>
