@@ -16,7 +16,7 @@ class App extends Component {
     }
 
     handleClick(text) {
-        this.setState({"dropdownText": text});
+        this.setState({dropdownText: text});
     }
 
     handleBoxClick(n) {
