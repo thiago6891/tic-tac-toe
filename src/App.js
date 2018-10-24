@@ -20,6 +20,8 @@ class App extends Component {
     }
 
     handleBoxClick(n) {
+        if (this.state.board[n] !== null) return;
+
         let winner = this.getWinner(this.state.board);
 
         if (winner === null) {
