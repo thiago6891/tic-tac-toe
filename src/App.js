@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import GameBoard from './GameBoard';
 
 const DROPDOWN_TEXT_VERSUS = "Play Against a Friend";
 
@@ -7,7 +8,7 @@ class App extends Component {
         super(props);
 
         this.state = {
-            "dropdownText": "Dropdown Button"
+            "dropdownText": DROPDOWN_TEXT_VERSUS
         };
     }
 
@@ -17,8 +18,8 @@ class App extends Component {
 
     render() {
         return (
-            <div className="container">
-                <div className="row">
+            <div className="container" style={{"max-width": "700px"}}>
+                <div className="row mt-3 mb-3 ml-1">
                     <div className="dropdown">
                         <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -32,16 +33,16 @@ class App extends Component {
                     </div>
                 </div>
                 <div className="row justify-content-center">
-                    <button className="btn btn-primary btn-lg font-weight-bold" disbaled="false">X</button>
-                    <button className="btn btn-primary btn-lg font-weight-bold" disabled="true">O</button>
+                    <button className="btn btn-primary btn-sm font-weight-bold mr-1" disbaled="false">X</button>
+                    <button className="btn btn-primary btn-sm font-weight-bold ml-1" disabled="true">O</button>
+                </div>
+                <div className="row justify-content-center mt-2">
+                    <p><small>Info Here</small></p>
                 </div>
                 <div className="row justify-content-center">
-                    <p>INFO HERE</p>
+                    <GameBoard />
                 </div>
-                <div className="row justify-content-center">
-                    <p>GAME HERE</p>
-                </div>
-                <div className="row justify-content-center">
+                <div className="row justify-content-center mt-3">
                     <button className="btn btn-secondary">Restart Game</button>
                 </div>
             </div>
