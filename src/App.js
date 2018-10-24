@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import GameBoard from './GameBoard';
 
-const DROPDOWN_TEXT_VERSUS = "Play Against a Friend";
+const GAME_MODE = {
+    EASY: "Easy",
+    MEDIUM: "Medium",
+    HARD: "Impossible",
+    VERSUS: "Play Against a Friend"
+};
 
 class App extends Component {
     constructor(props) {
@@ -11,12 +16,25 @@ class App extends Component {
             board: Array(9).fill(null),
             currentMark: 'X',
             winningLine: null,
-            dropdownText: DROPDOWN_TEXT_VERSUS
+            currentMode: GAME_MODE.VERSUS
         };
     }
 
-    handleClick(text) {
-        this.setState({dropdownText: text});
+    handleDropdownClick(gameMode) {
+        if (this.state.currentMode === gameMode) return;
+
+        switch (gameMode) {
+            case GAME_MODE.VERSUS:
+                this.setState({
+                    board: Array(9).fill(null), 
+                    currentMark: 'X', 
+                    winningLine: null,
+                    currentMode: gameMode
+                });
+                break;
+            default:
+                break;
+        }
     }
 
     handleBoxClick(n) {
@@ -72,6 +90,17 @@ class App extends Component {
         return true;
     }
 
+    renderDropdownItem(gameMode) {
+        let className = "dropdown-item";
+        if (this.state.currentMode === gameMode) className += " active";
+        
+        return (
+            <button className={className} onClick={() => this.handleDropdownClick(gameMode)}>
+                {gameMode}
+            </button>
+        )
+    }
+
     render() {
         let info = this.state.currentMark + " Turn";
         let winner = this.getWinner(this.state.board);
@@ -88,12 +117,11 @@ class App extends Component {
                     <div className="dropdown">
                         <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {this.state.dropdownText}
+                                {this.state.currentMode}
                         </button>
                         <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <button className="dropdown-item" onClick={() => this.handleClick(DROPDOWN_TEXT_VERSUS)}>
-                                {DROPDOWN_TEXT_VERSUS}
-                            </button>
+                            {this.renderDropdownItem(GAME_MODE.HARD)}
+                            {this.renderDropdownItem(GAME_MODE.VERSUS)}
                         </div>
                     </div>
                 </div>
