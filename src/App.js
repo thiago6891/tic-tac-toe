@@ -22,21 +22,19 @@ class App extends Component {
     handleBoxClick(n) {
         if (this.state.board[n] !== null) return;
 
-        let winner = this.getWinner(this.state.board);
+        const board = this.state.board.slice();
+        board[n] = this.state.currentMark;
 
-        if (winner === null) {
-            const board = this.state.board.slice();
-            board[n] = this.state.currentMark;
+        let winner = this.getWinner(board);
 
-            winner = this.getWinner(board);
-
-            if (winner) {
-                let line = winner.line;
-                this.setState({board: board, currentMark: null, winningLine: line});
-            } else {
-                let nextMark = this.state.currentMark === 'X' ? 'O' : 'X';
-                this.setState({board: board, currentMark: nextMark});
-            }
+        if (winner) {
+            let line = winner.line;
+            this.setState({board: board, currentMark: null, winningLine: line});
+        } else if (this.isBoardFull(board)) {
+            this.setState({board: board, currentMark: null});
+        } else {
+            let nextMark = this.state.currentMark === 'X' ? 'O' : 'X';
+            this.setState({board: board, currentMark: nextMark});
         }
     }
 
@@ -66,11 +64,21 @@ class App extends Component {
         this.setState({board: Array(9).fill(null), currentMark: 'X', winningLine: null});
     }
 
+    isBoardFull(board) {
+        for (let i = 0; i < board.length; i++)
+            if (board[i] === null)
+                return false;
+
+        return true;
+    }
+
     render() {
         let info = this.state.currentMark + " Turn";
         let winner = this.getWinner(this.state.board);
         if (winner) {
             info = winner.mark + " Wins";
+        } else if (this.isBoardFull(this.state.board)) {
+            info = "Draw";
         }
 
         return (
