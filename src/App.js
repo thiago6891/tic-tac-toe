@@ -8,33 +8,47 @@ const GAME_MODE = {
     VERSUS: "Play Against a Friend"
 };
 
+const MARK = {
+    X: 'X',
+    O: 'O'
+}
+
 class App extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             board: Array(9).fill(null),
-            currentMark: 'X',
+            currentMark: MARK.X,
             winningLine: null,
-            currentMode: GAME_MODE.VERSUS
+            currentMode: GAME_MODE.VERSUS,
+            aiMark: null
         };
+    }
+
+    componentDidUpdate() {
+        if (this.state.aiMark !== null && this.state.aiMark === this.state.currentMark) {
+            const board = this.state.board.slice();
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] === null) {
+                    // TODO: calculate best AI move
+                    this.handleBoxClick(i);
+                    return;
+                }
+            }
+        }
     }
 
     handleDropdownClick(gameMode) {
         if (this.state.currentMode === gameMode) return;
 
-        switch (gameMode) {
-            case GAME_MODE.VERSUS:
-                this.setState({
-                    board: Array(9).fill(null), 
-                    currentMark: 'X', 
-                    winningLine: null,
-                    currentMode: gameMode
-                });
-                break;
-            default:
-                break;
-        }
+        this.setState({
+            board: Array(9).fill(null), 
+            currentMark: MARK.X, 
+            winningLine: null,
+            currentMode: gameMode,
+            aiMark: gameMode !== GAME_MODE.VERSUS ? MARK.O : null
+        });
     }
 
     handleBoxClick(n) {
@@ -51,7 +65,7 @@ class App extends Component {
         } else if (this.isBoardFull(board)) {
             this.setState({board: board, currentMark: null});
         } else {
-            let nextMark = this.state.currentMark === 'X' ? 'O' : 'X';
+            let nextMark = this.state.currentMark === MARK.X ? MARK.O : MARK.X;
             this.setState({board: board, currentMark: nextMark});
         }
     }
@@ -79,12 +93,25 @@ class App extends Component {
     }
 
     restartGame() {
-        this.setState({board: Array(9).fill(null), currentMark: 'X', winningLine: null});
+        this.setState({
+            board: Array(9).fill(null),
+            currentMark: MARK.X,
+            winningLine: null,
+            aiMark: this.state.currentMode !== GAME_MODE.VERSUS ? MARK.O : null
+        });
     }
 
     isBoardFull(board) {
         for (let i = 0; i < board.length; i++)
             if (board[i] === null)
+                return false;
+
+        return true;
+    }
+
+    isBoardEmpty(board) {
+        for (let i = 0; i < board.length; i++)
+            if (board[i] !== null)
                 return false;
 
         return true;
@@ -101,14 +128,27 @@ class App extends Component {
         )
     }
 
-    render() {
-        let info = this.state.currentMark + " Turn";
+    getInfo() {
         let winner = this.getWinner(this.state.board);
-        if (winner) {
-            info = winner.mark + " Wins";
-        } else if (this.isBoardFull(this.state.board)) {
-            info = "Draw";
+        
+        if (winner)
+            return winner.mark + " Wins";
+        if (this.isBoardFull(this.state.board))
+            return "Draw";
+        if (this.isBoardEmpty(this.state.board) && this.state.currentMode !== GAME_MODE.VERSUS)
+            return "Start Game or Click X to Let The AI Play"
+
+        return this.state.currentMark + " Turn";
+    }
+
+    letAIPlayFirst() {
+        if (this.isBoardEmpty(this.state.board) && this.state.currentMode !== GAME_MODE.VERSUS) {
+            this.setState({aiMark: MARK.X});
         }
+    }
+
+    render() {
+        let info = this.getInfo();
 
         return (
             <div className="container" style={{"max-width": "700px"}}>
@@ -128,9 +168,10 @@ class App extends Component {
                 
                 <div className="row justify-content-center">
                     <button className="btn btn-primary btn-sm font-weight-bold mr-1" 
-                        disabled={this.state.currentMark !== 'X'}>X</button>
+                        disabled={this.state.currentMark !== MARK.X}
+                        onClick={() => this.letAIPlayFirst()}>{MARK.X}</button>
                     <button className="btn btn-primary btn-sm font-weight-bold ml-1" 
-                        disabled={this.state.currentMark !== 'O'}>O</button>
+                        disabled={this.state.currentMark !== MARK.O}>{MARK.O}</button>
                 </div>
                 
                 <div className="row justify-content-center mt-2">
