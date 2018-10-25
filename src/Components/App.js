@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
 import GameBoard from './GameBoard';
-
-const GAME_MODE = {
-    EASY: "Easy",
-    MEDIUM: "Medium",
-    HARD: "Impossible",
-    VERSUS: "Play Against a Friend"
-};
+import GameModePicker, { GAME_MODE } from './GameModePicker'
 
 const MARK = {
     X: 'X',
@@ -39,7 +33,7 @@ class App extends Component {
         }
     }
 
-    handleDropdownClick(gameMode) {
+    changeGameMode(gameMode) {
         if (this.state.currentMode === gameMode) return;
 
         this.setState({
@@ -117,17 +111,6 @@ class App extends Component {
         return true;
     }
 
-    renderDropdownItem(gameMode) {
-        let className = "dropdown-item";
-        if (this.state.currentMode === gameMode) className += " active";
-        
-        return (
-            <button className={className} onClick={() => this.handleDropdownClick(gameMode)}>
-                {gameMode}
-            </button>
-        )
-    }
-
     getInfo() {
         let winner = this.getWinner(this.state.board);
         
@@ -154,16 +137,8 @@ class App extends Component {
             <div className="container" style={{"max-width": "700px"}}>
                 
                 <div className="row mt-3 mb-3 ml-1">
-                    <div className="dropdown">
-                        <button className="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {this.state.currentMode}
-                        </button>
-                        <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            {this.renderDropdownItem(GAME_MODE.HARD)}
-                            {this.renderDropdownItem(GAME_MODE.VERSUS)}
-                        </div>
-                    </div>
+                    <GameModePicker gameMode={this.state.currentMode} 
+                        changeGameMode={(mode) => this.changeGameMode(mode)} />
                 </div>
                 
                 <div className="row justify-content-center">
