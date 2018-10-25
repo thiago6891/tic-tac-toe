@@ -114,7 +114,10 @@ class App extends Component {
                 </div>
                 
                 <div className="row justify-content-center mt-3">
-                    <button className="btn btn-secondary" onClick={() => this.restartGame()}>Restart Game</button>
+                    <button className="btn btn-secondary" 
+                        onClick={() => this.restartGame()}>
+                            Restart Game
+                    </button>
                 </div>
             </div>
         )
