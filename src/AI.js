@@ -16,28 +16,32 @@ function terminalTest(state) {
     return state.isOver();
 }
 
-function maxValue(state) {
+function maxValue(state, alpha, beta) {
     if (terminalTest(state)) return utility(state);
     
     let v = Number.NEGATIVE_INFINITY;
     state.getActions().forEach(action => {
         let resultingState = state.getResultingState(action);
         if (resultingState) {
-            v = Math.max(v, minValue(resultingState));
+            v = Math.max(v, minValue(resultingState, alpha, beta));
+            if (v >= beta) return v;
+            alpha = Math.max(alpha, v);
         }
     });
     
     return v;
 }
 
-function minValue(state) {
+function minValue(state, alpha, beta) {
     if (terminalTest(state)) return utility(state);
 
     let v = Number.POSITIVE_INFINITY;
     state.getActions().forEach(action => {
         let resultingState = state.getResultingState(action);
         if (resultingState) {
-            v = Math.min(v, maxValue(resultingState));
+            v = Math.min(v, maxValue(resultingState, alpha, beta));
+            if (v <= alpha) return v;
+            beta = Math.min(beta, v);
         }
     });
 
@@ -47,7 +51,8 @@ function minValue(state) {
 class AI {
     static getNextMove(game, mode) {
         markToMax = game.currentMark;
-        var state = new GameState(game.board, game.currentMark);
+        
+        let state = new GameState(game.board, game.currentMark);
 
         let actionResults = [];
         state.getActions().forEach(action => {
@@ -55,7 +60,10 @@ class AI {
             if (newState) {
                 actionResults.push({
                     action: action,
-                    value: minValue(newState)
+                    value: minValue(
+                        newState, 
+                        Number.NEGATIVE_INFINITY, 
+                        Number.POSITIVE_INFINITY)
                 });
             }
         });
