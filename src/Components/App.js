@@ -1,19 +1,18 @@
 import React, { Component } from 'react';
 import GameBoard from './GameBoard';
-import GameModePicker, { GAME_MODE } from './GameModePicker'
-
-const MARK = {
-    X: 'X',
-    O: 'O'
-}
+import GameModePicker, { GAME_MODE } from './GameModePicker';
+import Game, { MARK } from '../Game';
+import AI from '../AI';
 
 class App extends Component {
     constructor(props) {
         super(props);
 
+        this._game = new Game();
+
         this.state = {
-            board: Array(9).fill(null),
-            currentMark: MARK.X,
+            board: this._game.board,
+            currentMark: this._game.currentMark,
             winningLine: null,
             currentMode: GAME_MODE.VERSUS,
             aiMark: null
@@ -21,24 +20,22 @@ class App extends Component {
     }
 
     componentDidUpdate() {
-        if (this.state.aiMark !== null && this.state.aiMark === this.state.currentMark) {
-            const board = this.state.board.slice();
-            for (let i = 0; i < board.length; i++) {
-                if (board[i] === null) {
-                    // TODO: calculate best AI move
-                    this.handleBoxClick(i);
-                    return;
-                }
-            }
+        let isAIMove = this.state.aiMark !== null && 
+            this.state.aiMark === this.state.currentMark;
+        if (isAIMove) {
+            let n = AI.getNextMove(this._game.board);
+            this.handleBoxClick(n);
         }
     }
 
     changeGameMode(gameMode) {
         if (this.state.currentMode === gameMode) return;
 
+        this._game = new Game();
+
         this.setState({
-            board: Array(9).fill(null), 
-            currentMark: MARK.X, 
+            board: this._game.board, 
+            currentMark: this._game.currentMark, 
             winningLine: null,
             currentMode: gameMode,
             aiMark: gameMode !== GAME_MODE.VERSUS ? MARK.O : null
@@ -46,86 +43,43 @@ class App extends Component {
     }
 
     handleBoxClick(n) {
-        if (this.state.board[n] !== null) return;
+        if (this._game.makeMove(n)) {
+            this.setState({
+                board: this._game.board,
+                currentMark: this._game.currentMark
+            });
 
-        const board = this.state.board.slice();
-        board[n] = this.state.currentMark;
-
-        let winner = this.getWinner(board);
-
-        if (winner) {
-            let line = winner.line;
-            this.setState({board: board, currentMark: null, winningLine: line});
-        } else if (this.isBoardFull(board)) {
-            this.setState({board: board, currentMark: null});
-        } else {
-            let nextMark = this.state.currentMark === MARK.X ? MARK.O : MARK.X;
-            this.setState({board: board, currentMark: nextMark});
+            let winner = this._game.calculateWinner();
+            if (winner) this.setState({winningLine: winner.line});
         }
-    }
-
-    getWinner(board) {
-        const lines = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6]
-        ];
-
-        for (let i = 0; i < lines.length; i++) {
-            const [a, b, c] = lines[i];
-            if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-                return { mark: board[a], line: [a, b, c] };
-            }
-        }
-
-        return null;
     }
 
     restartGame() {
+        this._game = new Game();
+
         this.setState({
-            board: Array(9).fill(null),
-            currentMark: MARK.X,
+            board: this._game.board,
+            currentMark: this._game.currentMark,
             winningLine: null,
             aiMark: this.state.currentMode !== GAME_MODE.VERSUS ? MARK.O : null
         });
     }
 
-    isBoardFull(board) {
-        for (let i = 0; i < board.length; i++)
-            if (board[i] === null)
-                return false;
-
-        return true;
-    }
-
-    isBoardEmpty(board) {
-        for (let i = 0; i < board.length; i++)
-            if (board[i] !== null)
-                return false;
-
-        return true;
-    }
-
     getInfo() {
-        let winner = this.getWinner(this.state.board);
+        let winner = this._game.calculateWinner();
         
         if (winner)
             return winner.mark + " Wins";
-        if (this.isBoardFull(this.state.board))
+        if (this._game.isBoardFull())
             return "Draw";
-        if (this.isBoardEmpty(this.state.board) && this.state.currentMode !== GAME_MODE.VERSUS)
+        if (this._game.isBoardEmpty() && this.state.currentMode !== GAME_MODE.VERSUS)
             return "Start Game or Click X to Let The AI Play"
 
         return this.state.currentMark + " Turn";
     }
 
     letAIPlayFirst() {
-        if (this.isBoardEmpty(this.state.board) && this.state.currentMode !== GAME_MODE.VERSUS) {
+        if (this._game.isBoardEmpty() && this.state.currentMode !== GAME_MODE.VERSUS) {
             this.setState({aiMark: MARK.X});
         }
     }
