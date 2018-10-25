@@ -1,4 +1,5 @@
 import GameState from './GameState';
+import { GAME_MODE } from './Components/GameModePicker';
 
 var markToMax;
 
@@ -44,7 +45,7 @@ function minValue(state) {
 }
 
 class AI {
-    static getNextMove(game) {
+    static getNextMove(game, mode) {
         markToMax = game.currentMark;
         var state = new GameState(game.board, game.currentMark);
 
@@ -65,6 +66,17 @@ class AI {
             return b.value - a.value;
         })
 
+        let difficultyFactor;
+        if (mode === GAME_MODE.HARD) difficultyFactor = 1;
+        else if (mode === GAME_MODE.MEDIUM) difficultyFactor = 0.75;
+        else difficultyFactor = 0.5;
+
+        while (actionResults.length > 1) {
+            if (Math.random() < difficultyFactor) {
+                return actionResults[0].action;
+            }
+            actionResults.shift();
+        }
         return actionResults[0].action;
     }
 }

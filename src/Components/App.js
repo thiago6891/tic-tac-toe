@@ -23,7 +23,7 @@ class App extends Component {
         let isAIMove = this.state.aiMark === this.state.currentMark &&
             !this._game.isOver();
         if (isAIMove) {
-            let n = AI.getNextMove(this._game);
+            let n = AI.getNextMove(this._game, this.state.currentMode);
             this.handleBoxClick(n);
         }
     }
