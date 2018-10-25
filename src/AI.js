@@ -48,8 +48,14 @@ function minValue(state, alpha, beta) {
     return v;
 }
 
+// TODO: remove it (for testing purposes only)
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 class AI {
-    static getNextMove(game, mode) {
+    async getNextMove(game, mode) {
+        await sleep(5000);
         markToMax = game.currentMark;
         
         let state = new GameState(game.board, game.currentMark);

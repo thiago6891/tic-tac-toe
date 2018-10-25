@@ -7,7 +7,8 @@ class GameBoard extends Component {
 
         this.state = {
             board: props.board,
-            winningLine: props.winningLine
+            winningLine: props.winningLine,
+            aiTurn: props.aiTurn
         };
     }
 
@@ -18,6 +19,10 @@ class GameBoard extends Component {
 
         if (this.props.winningLine !== prevProps.winningLine) {
             this.setState({winningLine: this.props.winningLine});
+        }
+
+        if (this.props.aiTurn !== prevProps.aiTurn) {
+            this.setState({aiTurn: this.props.aiTurn});
         }
     }
 
@@ -38,8 +43,11 @@ class GameBoard extends Component {
     }
 
     render() {
+        let overlayStyle = { display: this.state.aiTurn ? "block" : "none" };
+
         return(
             <div>
+                <div className="ai-thinking-box" style={overlayStyle}>Thinking...</div>
                 <div className="row">
                     {this.renderBox(0)}
                     {this.renderBox(1)}
