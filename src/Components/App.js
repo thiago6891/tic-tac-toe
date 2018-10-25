@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import GameBoard from './GameBoard';
 import GameModePicker, { GAME_MODE } from './GameModePicker';
-import Game, { MARK } from '../Game';
+import GameState, { MARK } from '../GameState';
 import AI from '../AI';
 
 class App extends Component {
     constructor(props) {
         super(props);
 
-        this._game = new Game();
+        this._game = new GameState();
 
         this.state = {
             board: this._game.board,
@@ -20,10 +20,10 @@ class App extends Component {
     }
 
     componentDidUpdate() {
-        let isAIMove = this.state.aiMark !== null && 
-            this.state.aiMark === this.state.currentMark;
+        let isAIMove = this.state.aiMark === this.state.currentMark &&
+            !this._game.isOver();
         if (isAIMove) {
-            let n = AI.getNextMove(this._game.board);
+            let n = AI.getNextMove(this._game);
             this.handleBoxClick(n);
         }
     }
@@ -31,7 +31,7 @@ class App extends Component {
     changeGameMode(gameMode) {
         if (this.state.currentMode === gameMode) return;
 
-        this._game = new Game();
+        this._game = new GameState();
 
         this.setState({
             board: this._game.board, 
@@ -43,7 +43,11 @@ class App extends Component {
     }
 
     handleBoxClick(n) {
-        if (this._game.makeMove(n)) {
+        let newState = this._game.getResultingState(n);
+
+        if (newState) {
+            this._game = newState;
+
             this.setState({
                 board: this._game.board,
                 currentMark: this._game.currentMark
@@ -55,7 +59,7 @@ class App extends Component {
     }
 
     restartGame() {
-        this._game = new Game();
+        this._game = new GameState();
 
         this.setState({
             board: this._game.board,
