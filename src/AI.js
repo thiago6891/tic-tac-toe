@@ -49,7 +49,7 @@ function minValue(state, alpha, beta) {
 }
 
 class AI {
-    static getNextMove(game, mode) {
+    async getNextMove(game, mode) {
         markToMax = game.currentMark;
         
         let state = new GameState(game.board, game.currentMark);

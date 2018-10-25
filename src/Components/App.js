@@ -15,16 +15,23 @@ class App extends Component {
             currentMark: this._game.currentMark,
             winningLine: null,
             currentMode: GAME_MODE.VERSUS,
-            aiMark: null
+            aiMark: null,
+            aiThinking: false
         };
     }
 
     componentDidUpdate() {
-        let isAIMove = this.state.aiMark === this.state.currentMark &&
-            !this._game.isOver();
-        if (isAIMove) {
-            let n = AI.getNextMove(this._game, this.state.currentMode);
-            this.handleBoxClick(n);
+        if (!this.state.aiThinking) {
+            let isAIMove = this.state.aiMark === this.state.currentMark &&
+                !this._game.isOver();
+            if (isAIMove) {
+                this.setState({aiThinking: true});
+
+                new AI().getNextMove(this._game, this.state.currentMode).then((move) => {
+                    this.handleBoxClick(move);
+                    this.setState({aiThinking: false});
+                });
+            }
         }
     }
 
@@ -148,7 +155,8 @@ class App extends Component {
                 <div className="row justify-content-center">
                     <GameBoard handleClick={(n) => this.handleBoxClick(n)} 
                         board={this.state.board} 
-                        winningLine={this.state.winningLine} />
+                        winningLine={this.state.winningLine}
+                        aiTurn={this.state.aiThinking} />
                 </div>
                 
                 <div className="row justify-content-center mt-3">
