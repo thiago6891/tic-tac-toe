@@ -43,11 +43,13 @@ class GameBoard extends Component {
     }
 
     render() {
-        let overlayStyle = { display: this.state.aiTurn ? "block" : "none" };
+        let overlayStyle = { display: this.state.aiTurn ? "flex" : "none" };
 
         return(
             <div>
-                <div className="ai-thinking-box" style={overlayStyle}>Thinking...</div>
+                <div className="ai-thinking-box" style={overlayStyle}>
+                    <div class="lds-dual-ring"></div>
+                </div>
                 <div className="row">
                     {this.renderBox(0)}
                     {this.renderBox(1)}
