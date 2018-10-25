@@ -88,7 +88,7 @@ class App extends Component {
         let info = this.getInfo();
 
         return (
-            <div className="container" style={{"max-width": "700px"}}>
+            <div className="container" style={{maxWidth: "700px"}}>
                 
                 <div className="row mt-3 mb-3 ml-1">
                     <GameModePicker gameMode={this.state.currentMode} 
