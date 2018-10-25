@@ -70,16 +70,48 @@ class App extends Component {
     }
 
     getInfo() {
+        let info = {
+            text: "",
+            xBtnDisabled: true,
+            oBtnDisabled: true,
+            xBtnClassname: "btn btn-primary btn-sm font-weight-bold mr-1",
+            oBtnClassname: "btn btn-primary btn-sm font-weight-bold ml-1"
+        };
+
         let winner = this._game.calculateWinner();
         
-        if (winner)
-            return winner.mark + " Wins";
-        if (this._game.isBoardFull())
-            return "Draw";
-        if (this._game.isBoardEmpty() && this.state.currentMode !== GAME_MODE.VERSUS)
-            return "Start Game or Click X to Let The AI Play"
+        if (winner) {
+            info.text = winner.mark + " Wins";
+            if (winner.mark === MARK.X) {
+                info.xBtnClassname = info.xBtnClassname
+                    .replace("btn-primary", "btn-success");
+                info.oBtnClassname = info.oBtnClassname
+                    .replace("btn-primary", "btn-danger");
+            } else {
+                info.oBtnClassname = info.oBtnClassname
+                    .replace("btn-primary", "btn-success");
+                info.xBtnClassname = info.xBtnClassname
+                    .replace("btn-primary", "btn-danger");
+            }
+        } else if (this._game.isBoardFull()) {
+            info.text = "Draw";
+            info.oBtnClassname = info.oBtnClassname
+                .replace("btn-primary", "btn-secondary");
+            info.xBtnClassname = info.xBtnClassname
+                .replace("btn-primary", "btn-secondary");
+        } else if (this._game.isBoardEmpty() && this.state.currentMode !== GAME_MODE.VERSUS) {
+            info.text = "Start Game or Click X to Let The AI Play";
+            info.xBtnDisabled = false;
+        } else {
+            info.text = this.state.currentMark + " Turn";
+            if (this.state.currentMark === MARK.X) {
+                info.xBtnDisabled = false;
+            } else {
+                info.oBtnDisabled = false;
+            }
+        }
 
-        return this.state.currentMark + " Turn";
+        return info;
     }
 
     letAIPlayFirst() {
@@ -100,15 +132,17 @@ class App extends Component {
                 </div>
                 
                 <div className="row justify-content-center">
-                    <button className="btn btn-primary btn-sm font-weight-bold mr-1" 
-                        disabled={this.state.currentMark !== MARK.X}
-                        onClick={() => this.letAIPlayFirst()}>{MARK.X}</button>
-                    <button className="btn btn-primary btn-sm font-weight-bold ml-1" 
-                        disabled={this.state.currentMark !== MARK.O}>{MARK.O}</button>
+                    <button className={info.xBtnClassname} disabled={info.xBtnDisabled}
+                        onClick={() => this.letAIPlayFirst()}>
+                            {MARK.X}
+                    </button>
+                    <button className={info.oBtnClassname} disabled={info.oBtnDisabled}>
+                        {MARK.O}
+                    </button>
                 </div>
                 
                 <div className="row justify-content-center mt-2">
-                    <p><small>{info}</small></p>
+                    <p><small>{info.text}</small></p>
                 </div>
                 
                 <div className="row justify-content-center">
